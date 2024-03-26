@@ -1,82 +1,19 @@
-# cosa faremo oggi?
-# un esempio di progetto segmentato
-
-# sia data una lista <ls> contenente N digit da 1 a N
-# non necessariamente tutti presenti quindi con
-# eventuali ripetizioni
-# [1, 2, 3, 4, 5, 6, 7, 8]
-# N=8
-# [1,1,2,2,3,5,8,8]
-
-# N=5
-# [1,3,5,1,5]
-
-# sia data una seconda lista <lsCheck>, costruita esattamente
-# come la precendente, ovviamente con valori diversi,
-# ma sempre nel rispetto del valore N
+import copy
 import random
 
 
-N = 6
-ls = [1, 3, 2, 2, 5, 6]
-lsCheck = [2, 3, 3, 6, 6, 4]
-
-# Scrivere una funzione alla quale passerete
-# come parametri ls e lsCheck e la funzione deve riportare
-# due valori
-# il primo: tutte le volte che c'è lo stesso digit
-# nella stessa posizione di ls e lsCheck
-# nel nostro esempio il primo valore tornato dalla funzione
-# sarà 1. A questo punto per completare il calcolo, tolgo
-# dalle due liste i valori che stanno nella stessa posizione
-ls = [1, 3, 2, 2, 5, 6]
-lsCheck = [2, 3, 3, 6, 6, 4]
-
-ls = [1, 2, 2, 5, 6]
-lsCheck = [2, 3, 6, 6, 4]
-# il secondo: tutte le volte in cui un elemento della lista
-# lsCheck è presente nella lista ls, ma non nella
-# stessa posizione
-# Nel nostro esempio la funzione torna:
-# c'è il 2 nella ls?
-# sì, lo tolgo
-ls = [1, 2, 5, 3, 3]
-lsCheck = [2, 3, 6, 6, 4]
-
-
-ls = [
-    1,
-    4,
-    1,
-    4,
-    1,
-]
-lsCheck = [5, 5, 5, 3, 6]
-
-
-ls = [6, 6, 5, 1, 1]
-lsCheck = [3, 4, 4, 1, 4]
-
-
-# Genera una lista che contiene N numeri casuali tra 1 e N
-def GeneraLista(N):
+# Genera una lista che contiene M numeri casuali tra 1 e N
+def GeneraLista(N, M):
     lista = []
-    for i in range(N):
+    for i in range(M):
         v = random.randint(1, N)
         lista.append(v)
     return lista
 
 
-# Non più utilizzato
-def ContaUguali(ls, lsCheck):
-    uguali = 0
-    for i in range(len(ls)):
-        if ls[i] == lsCheck[i]:
-            uguali = uguali + 1
-    return uguali
-
-
 def ContaUgualiInStessoEInAltro(ls, lsCheck):
+    ls = ls.copy()
+    lsCheck = lsCheck.copy()
     # Conteggio e elimino gli elementi nello stesso posto
     stessoPosto = 0
     for i in range(len(lsCheck)):
@@ -87,18 +24,70 @@ def ContaUgualiInStessoEInAltro(ls, lsCheck):
 
     # Conteggio e elimino gli elementi in posto differente
     altroPosto = 0
-    for i in range(len(lsCheck)):
-        if lsCheck[i] != None and lsCheck[i] in ls:
+    for v in lsCheck:
+        if v != None and v in ls:
             altroPosto += 1
-            ls.remove(lsCheck[i])
+            ls.remove(v)
     return stessoPosto, altroPosto
 
 
-N = 5
-for i in range(4):
-    l1 = GeneraLista(N)
-    l2 = GeneraLista(N)
-    print(l1)
-    print(l2)
-    stesso, diverso = ContaUgualiInStessoEInAltro(l1, l2)
-    print(stesso, diverso)
+N = int(input("Inserire il numero di simboli: "))
+M = int(input("Inserire la lunghezza della lista: "))
+l1 = GeneraLista(N, M)
+l2 = GeneraLista(N, M)
+print(l1)
+print(l2)
+strike, ball = ContaUgualiInStessoEInAltro(l1, l2)
+print(strike, ball)
+print(l1)
+print(l2)
+
+
+def ConvertiStringaDigitInListaNumeri(sd):
+    return [int(x) for x in list(sd)]
+
+
+# Esempio di utilizzo:
+
+sd = input("Inserisci la tua prova: ")
+sd = (ConvertiStringaDigitInListaNumeri(sd))
+print(sd)
+
+
+#Progetto da svolgere
+"""
+Il gioco del master mind consiste in:
+N palline colorate (i nostri digit)
+M caselle da riempire (la lunghezza delle nostre liste)
+una sequenza di M palline colorate generata dal master del gioco
+un ciclo di prove in cui
+  1) il giocatore fornisce la sua proposta
+  2) il master verifica il numero di strike e ball ottenuti
+  3) il master comunica strike e ball al giocatore
+  4) se sono M strike, il giocatore ha vinto
+      5) altrimenti si riparte da 1, con la nuova proposta
+Esempio di gioco
+  N=6 (sei simboli, da 1 a 6)
+  M=4 (lunghezza delle liste pari a 4)
+  master= GeneraLista(4, 6)
+quindi master potrebbe essere ad esempio [4,1,1,5]
+ciclo di gioco
+    1) il giocatore comunica "1234" che viene trasformato in [1,2,3,4]
+    2) [1,2,3,4] vs [4,1,1,5] => 0 strike, 2 ball
+    3) non ha vinto poichè servono M strike
+    4) il giocatore ricomincia al punto 1, stavolta,
+       ovviamente, con una nuova proposta, es 2156 => [2,1,5,6]
+    ecc, ecc, ecc
+"""
+strike1, ball1 = ContaUgualiInStessoEInAltro(sd,l1)
+while True:
+    sd = input("Inserisci la tua prova: ")
+    sd = (ConvertiStringaDigitInListaNumeri(sd))
+    print(sd)
+    strike1, ball1 = ContaUgualiInStessoEInAltro(sd,l1)
+    print(sd," VS ",l1, " -> ", strike1," strike e ", ball1, " ball")
+    print("Non hai ancora vinto")
+    if strike1 == M:
+         print(sd," VS ",l1, " -> ", strike1," strike e ", ball1, " ball")
+         print("Hai vinto")
+         break
